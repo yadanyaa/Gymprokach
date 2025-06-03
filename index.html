@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GymPro App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        .hidden {
+            display: none;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+        input[type="number"], select {
+            padding: 5px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        button {
+            margin-top: 15px;
+            padding: 10px 20px;
+            background-color: #2c8cff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #1a6ecc;
+        }
+        .app {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>GymPro</h1>
+        <div id="auth">
+            <h2>Авторизация</h2>
+            <label for="gender">Пол:</label>
+            <select id="gender">
+                <option value="male">Мужской</option>
+                <option value="female">Женский</option>
+            </select>
+            <label for="age">Возраст:</label>
+            <input id="age" type="number" min="10" max="100">
+            <label for="height">Рост (см):</label>
+            <input id="height" type="number" min="100" max="250">
+            <label for="weight">Вес (кг):</label>
+            <input id="weight" type="number" min="30" max="300">
+            <button onclick="login()">Войти</button>
+        </div>
+
+        <div id="apps" class="hidden">
+            <p id="calories"></p>
+            <div class="app">
+                <h3>Калькулятор одноповторного максимума</h3>
+                <label for="orm-weight">Вес штанги (кг):</label>
+                <input id="orm-weight" type="number" min="1">
+                <label for="orm-reps">Количество повторений:</label>
+                <input id="orm-reps" type="number" min="1">
+                <button onclick="calcORM()">Рассчитать</button>
+                <p id="orm-result"></p>
+            </div>
+            <div class="app">
+                <h3>Пример программы тренировок</h3>
+                <label for="days">Дней в неделю:</label>
+                <input id="days" type="number" min="1" max="6" value="3">
+                <button onclick="showProgram()">Показать план</button>
+                <pre id="program"></pre>
+            </div>
+        </div>
+    </div>
+<script>
+function login() {
+    const gender = document.getElementById('gender').value;
+    const age = parseInt(document.getElementById('age').value);
+    const height = parseInt(document.getElementById('height').value);
+    const weight = parseInt(document.getElementById('weight').value);
+    if (!age || !height || !weight) {
+        alert('Заполните все поля');
+        return;
+    }
+    localStorage.setItem('user', JSON.stringify({gender, age, height, weight}));
+    document.getElementById('auth').classList.add('hidden');
+    document.getElementById('apps').classList.remove('hidden');
+    showCalories();
+}
+
+function showCalories() {
+    const data = JSON.parse(localStorage.getItem('user'));
+    if (!data) return;
+    const {gender, age, height, weight} = data;
+    let bmr;
+    if (gender === 'male') {
+        bmr = 10*weight + 6.25*height - 5*age + 5;
+    } else {
+        bmr = 10*weight + 6.25*height - 5*age - 161;
+    }
+    const calories = Math.round(bmr * 1.55); // умеренная активность
+    document.getElementById('calories').textContent = 'Рекомендуемая суточная норма калорий: ' + calories + ' ккал';
+}
+
+function calcORM() {
+    const w = parseFloat(document.getElementById('orm-weight').value);
+    const r = parseInt(document.getElementById('orm-reps').value);
+    if (!w || !r) {
+        alert('Введите вес и количество повторений');
+        return;
+    }
+    const orm = w * (1 + r / 30);
+    document.getElementById('orm-result').textContent = '1ПМ: ' + orm.toFixed(1) + ' кг';
+}
+
+function showProgram() {
+    const days = parseInt(document.getElementById('days').value);
+    let plan = '';
+    if (days <= 3) {
+        plan = 'День 1: Фулбоди\nДень 2: Отдых\nДень 3: Фулбоди';
+    } else if (days === 4) {
+        plan = 'День 1: Верх\nДень 2: Низ\nДень 3: Отдых\nДень 4: Верх\nДень 5: Низ';
+    } else {
+        plan = 'PPL сплит по дням';
+    }
+    document.getElementById('program').textContent = plan;
+}
+
+// если данные есть в localStorage, показываем сразу
+if (localStorage.getItem('user')) {
+    document.getElementById('auth').classList.add('hidden');
+    document.getElementById('apps').classList.remove('hidden');
+    showCalories();
+}
+</script>
+</body>
+</html>
