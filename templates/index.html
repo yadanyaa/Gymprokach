@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GymPro App</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -55,22 +56,22 @@
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container py-4">
         <h1>GymPro</h1>
         <div id="auth">
             <h2>Авторизация</h2>
             <label for="gender">Пол:</label>
-            <select id="gender">
+            <select id="gender" class="form-select mb-2">
                 <option value="male">Мужской</option>
                 <option value="female">Женский</option>
             </select>
             <label for="age">Возраст:</label>
-            <input id="age" type="number" min="10" max="100">
+            <input class="form-control mb-2" id="age" type="number" min="10" max="100">
             <label for="height">Рост (см):</label>
-            <input id="height" type="number" min="100" max="250">
+            <input class="form-control mb-2" id="height" type="number" min="100" max="250">
             <label for="weight">Вес (кг):</label>
-            <input id="weight" type="number" min="30" max="300">
-            <button onclick="login()">Войти</button>
+            <input class="form-control mb-3" id="weight" type="number" min="30" max="300">
+            <button class="btn btn-primary" onclick="login()">Войти</button>
         </div>
 
         <div id="apps" class="hidden">
@@ -78,17 +79,17 @@
             <div class="app">
                 <h3>Калькулятор одноповторного максимума</h3>
                 <label for="orm-weight">Вес штанги (кг):</label>
-                <input id="orm-weight" type="number" min="1">
+                <input class="form-control mb-2" id="orm-weight" type="number" min="1">
                 <label for="orm-reps">Количество повторений:</label>
-                <input id="orm-reps" type="number" min="1">
-                <button onclick="calcORM()">Рассчитать</button>
+                <input class="form-control mb-2" id="orm-reps" type="number" min="1">
+                <button class="btn btn-primary" onclick="calcORM()">Рассчитать</button>
                 <p id="orm-result"></p>
             </div>
             <div class="app">
                 <h3>Пример программы тренировок</h3>
                 <label for="days">Дней в неделю:</label>
-                <input id="days" type="number" min="1" max="6" value="3">
-                <button onclick="showProgram()">Показать план</button>
+                <input class="form-control mb-2" id="days" type="number" min="1" max="6" value="3">
+                <button class="btn btn-secondary" onclick="showProgram()">Показать план</button>
                 <pre id="program"></pre>
             </div>
         </div>
@@ -153,6 +154,7 @@ if (localStorage.getItem('user')) {
     document.getElementById('apps').classList.remove('hidden');
     showCalories();
 }
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </script>
 </body>
 </html>
