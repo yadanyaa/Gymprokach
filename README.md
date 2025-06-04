@@ -9,6 +9,7 @@
 3. Запустите миграции БД (если нужны): `alembic upgrade head`.
 4. Запустите бота: `python bot/main.py`.
 
+5. Запустите веб-сайт: `python app.py`.
 ### Docker
 
 ```
