@@ -1,9 +1,7 @@
 version: '3.9'
 services:
-  bot:
+  web:
     build: .
-    env_file:
-      - .env
     volumes:
       - ./:/app
-    command: ["python", "bot/main.py"]
+    command: ["python", "app.py"]

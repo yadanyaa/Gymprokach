@@ -86,10 +86,14 @@
                 <p id="orm-result"></p>
             </div>
             <div class="app">
-                <h3>Пример программы тренировок</h3>
-                <label for="days">Дней в неделю:</label>
-                <input class="form-control mb-2" id="days" type="number" min="1" max="6" value="3">
-                <button class="btn btn-secondary" onclick="showProgram()">Показать план</button>
+                <h3>Программа тренировок</h3>
+                <label for="level">Уровень:</label>
+                <select id="level" class="form-select mb-2">
+                    <option value="novice">Новичок</option>
+                    <option value="intermediate">Средний</option>
+                    <option value="advanced">Продвинутый</option>
+                </select>
+                <button class="btn btn-secondary" onclick="showProgram()">Получить план</button>
                 <pre id="program"></pre>
             </div>
         </div>
@@ -113,15 +117,19 @@ function login() {
 function showCalories() {
     const data = JSON.parse(localStorage.getItem('user'));
     if (!data) return;
-    const {gender, age, height, weight} = data;
-    let bmr;
-    if (gender === 'male') {
-        bmr = 10*weight + 6.25*height - 5*age + 5;
-    } else {
-        bmr = 10*weight + 6.25*height - 5*age - 161;
-    }
-    const calories = Math.round(bmr * 1.55); // умеренная активность
-    document.getElementById('calories').textContent = 'Рекомендуемая суточная норма калорий: ' + calories + ' ккал';
+    const query = new URLSearchParams({
+        gender: data.gender.startsWith('male') ? 'M' : 'F',
+        age: data.age,
+        height: data.height,
+        weight: data.weight,
+        activity: 1.55
+    });
+    fetch(`/api/calories?${query.toString()}`)
+        .then(r => r.json())
+        .then(d => {
+            document.getElementById('calories').textContent =
+                'Рекомендуемая суточная норма калорий: ' + d.maintenance + ' ккал';
+        });
 }
 
 function calcORM() {
@@ -136,16 +144,14 @@ function calcORM() {
 }
 
 function showProgram() {
-    const days = parseInt(document.getElementById('days').value);
-    let plan = '';
-    if (days <= 3) {
-        plan = 'День 1: Фулбоди\nДень 2: Отдых\nДень 3: Фулбоди';
-    } else if (days === 4) {
-        plan = 'День 1: Верх\nДень 2: Низ\nДень 3: Отдых\nДень 4: Верх\nДень 5: Низ';
-    } else {
-        plan = 'PPL сплит по дням';
-    }
-    document.getElementById('program').textContent = plan;
+    const level = document.getElementById('level').value;
+    const data = JSON.parse(localStorage.getItem('user')) || {};
+    const gender = (data.gender || 'male').startsWith('male') ? 'M' : 'F';
+    fetch(`/api/program?level=${level}&gender=${gender}`)
+        .then(r => r.json())
+        .then(d => {
+            document.getElementById('program').textContent = d.plan;
+        });
 }
 
 // если данные есть в localStorage, показываем сразу
